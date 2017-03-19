@@ -7,12 +7,19 @@
 		"Malaga_cultural"
 	],
 
-
 	"feeds" : 
 	[
 		{
 			"name"	:	"malaga.es",
 			"link"	:	"http://www.malaga.es/base/canal/tipo-1/tipoNoticia-1/canal-372/noticia"
+		},
+		{
+			"name"	:	"malaga turismo",
+			"link"	:	"http://www.malagaturismo.com/es/rss/noticias"
+		},
+		{
+			"name"	:	"malaga eu",
+			"link"	:	"http://rss.malaga.eu/ayto/m_ciudad/portal/menu/varios/rssd/destacados/espectaculos.rss"
 		}
 	]
 }
