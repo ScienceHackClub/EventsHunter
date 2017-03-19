@@ -1,0 +1,19 @@
+{
+	"twitter_accounts" : 
+	[
+		"redculturalMLG",
+		"malagaociocultu",
+		"CulturalibreM",
+		"Malaga_cultural"
+	],
+
+
+	"feeds" : 
+	[
+		{
+			"name"	:	"malaga.es",
+			"link"	:	"http://www.malaga.es/base/canal/tipo-1/tipoNoticia-1/canal-372/noticia"
+		}
+	]
+}
+
