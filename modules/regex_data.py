@@ -1,63 +1,82 @@
+# -*- coding: utf-8 -*-
 #!usr/bin/env python
 
 ##
-## Extraer datos por regex
-## (Temporal hasta AI)
-## 
+## Extracts dates,times,prices,numbers by regex
+## and prepares TAGs for NLTK parse
+##
+## Author: Jean-Francois
+##
 
 import re
 
-def RegexExtractData(data):
-	# Extract time
-	times = []
-	
-	append = re.findall(r'([0-9]{1,2}[:\.][0-9]{1,2}(?:am|pm)?)', data, re.M | re.I)
-	if append:
-		times.extend(append)
-
-	append = re.findall(r'a las (.+?(?:pm|am)?(?: en punto| y [^ ]+| menos [^ ]+)?)[ \.,]', data, re.M | re.I)
-	if append:
-		times.extend(append)
-
-	if len(times)>3: times = times[:3]  
-	times.sort(key=len)
-	
-	if times:
-		time=times[0]
-	else:
-		time="Unknown"
-		
-	#Extract location
-	locations = []
-	
-	append = re.findall(r'((?:En|en) (?:la|el)? ?(?:.+?))(?:\.|,|a las)', data, re.M | re.I)
-	if append:
-		locations.extend(append)
-
-	if len(locations)>3: locations = locations[:3]  
-	locations.sort(key=len)
-	
-	if locations:
-		location=locations[0]
-	else:
-		location="Unknown"
-
-	#Extract date
-	date = re.search(r'((?:[^ ]+) de (?:[Ee]nero|[Ff]ebrero|[Mm]arzo|[Aa]bril|[Mm]ayo|[Jj]unio|[Aa]gosto|[Ss]eptiembre|[Oo]ctubre|[Nn]oviembre|[Dd]iciembre))', data, re.M | re.I)
-
-	if date:
-		date = date.group(0)
-	else:
-		date = "Unknown"
-
-	#return stuff
-	ret = {
-		'date' : date,
-		'time' : time,
-		'loc'  : location
+def ProcessTags(data_in, replace=True):
+	data = {
+		'TIME_TAG' : [],
+		'DATE_TAG'	:	[],
+		'PRICE_TAG' : [],
+		'NUMBER_TAG' : []
 	}
-	return ret
+
+	# Extract times
+	pattern = r'([0-9]{1,2}[:\.][0-9]{2}(?:am|pm)?)'
+	append = re.findall(pattern, data_in, re.M | re.I)
+	if append:
+		data['TIME_TAG'].extend(append)
+	if replace:
+		data_in = re.sub(pattern,'TIME_TAG',data_in, 100)
+
+	pattern = r'a las (.+?(?:pm|am)?(?: en punto| y [^ ]+| menos [^ ]+)?)[ \.,]'
+	append = re.findall(pattern, data_in, re.M | re.I)
+	if append:
+		data['TIME_TAG'].extend(append)
+	if replace:
+		data_in = re.sub(pattern,'TIME_TAG',data_in, 100)
+
+	# Extract dates
+	pattern = r'((?:[^ ]+) de (?:[Ee]nero|[Ff]ebrero|[Mm]arzo|[Aa]bril|[Mm]ayo|[Jj]unio|[Aa]gosto|[Ss]eptiembre|[Oo]ctubre|[Nn]oviembre|[Dd]iciembre))'
+	date = re.search(pattern, data_in, re.M | re.I)
+	if date:
+		data['DATE_TAG'].append(date.group(0))
+	if replace:
+		data_in = re.sub(pattern,'DATE_TAG',data_in, 100)
 
 
+	# Extract prices
+	pattern = r'([0-9]+[\.\'\,]?[0-0]+ (?:euro|euros|dólar|dólares|[\€\$]))'
+	append = re.findall(pattern, data_in, re.M | re.I)
+	if append:
+		data['PRICE_TAG'].extend(append)
+	if replace:
+		data_in = re.sub(pattern,'PRICE_TAG',data_in, 100)
+
+	# Extract numbers
+	pattern = r'([0-9]+)'
+	append = re.findall(pattern, data_in, re.M | re.I)
+	if append:
+		data['NUMBER_TAG'].extend(append)
+	if replace:
+		data_in = re.sub(pattern,'NUMBER_TAG',data_in, 100)
+
+	return data_in, data #data_in = text, data = tags
 
 
+## Restore tags on original text
+def RestoreTags(text, backup):
+	for it in backup: # it = TAGS
+		for el in it: # el = backup data
+			text = text.replace(it, el)
+
+
+## bruteforce restoration (temporal)
+## THIS IS BUGGY. A SENTENCE COULD BE IN TWO PLACES
+## TO DO: SAVE TAG POSITION IN NLTK PROCESSING
+def RestoreEntity(sent, text, backup, tag_type):
+	i=0
+	for el in backup[tag_type]: # el = backup data
+		test_sent = sent.replace(tag_type, el)
+		found = text.find(sent)
+		if found!=-1:
+			regex = '^((.*?'+tag_type+'.*?){' + i + '})'+tag_type
+			text = re.sub(regex, el, text)
+		i+=1

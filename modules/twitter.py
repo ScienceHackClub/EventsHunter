@@ -39,7 +39,6 @@ def GetTweets(_user, _count=3):
 		twits.append(ParseTweet(twit_json))
 
 	print '..... (' + str(len(twits)) + ')'
-	print '...'
 	return twits
 
 
