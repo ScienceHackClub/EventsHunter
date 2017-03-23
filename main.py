@@ -17,15 +17,8 @@ debug_path = './debug/'
 
 
 # Load config.json
-try:
-	with open("config.json") as json_data:
-	    config = json.load(json_data)
-except:
-	pass
-
-if not config:
-	print "Problem loading config.json"
-	sys.exit(0)
+with open("config.json") as json_data:
+    config = json.load(json_data)
 
 
 # Load args (not used yet)
