@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 #!usr/bin/env python
 
-##
-## Extracts dates,times,prices,numbers by regex
+## UNFINISHED
+## Text preprocessing
+## - Separa comas, interrogantes, dospuntos, exc,etc (y puntos?) de palabras
+## - Extracts dates,times,prices,numbers by regex, hashtags, links, etc
 ## and prepares TAGs for NLTK parse
 ##
 ## Author: Jean-Francois
@@ -10,13 +12,31 @@
 
 import re
 
-def ProcessTags(data_in, replace=True):
+def PrepareText(data_in, replace=True):
 	data = {
 		'TIME_TAG' : [],
 		'DATE_TAG'	:	[],
 		'PRICE_TAG' : [],
-		'NUMBER_TAG' : []
+		'NUMBER_TAG' : [],
+		'HASH_TAG' : [],
+		'LINK_TAG' : []
 	}
+
+	# Extract hashtags
+	pattern = r'([\#\@][^\ ]{3,})'
+	append = re.findall(pattern, data_in, re.M | re.I)
+	if append:
+		data['HASH_TAG'].extend(append)
+	if replace:
+		data_in = re.sub(pattern,'HASH_TAG',data_in, 100)
+
+	# Extract links
+	pattern = r'((?:http[s]?\:\/\/|www\.|http[s]\:\/\/www\.)[^\ ]+)'
+	append = re.findall(pattern, data_in, re.M | re.I)
+	if append:
+		data['LINK_TAG'].extend(append)
+	if replace:
+		data_in = re.sub(pattern,'LINK_TAG',data_in, 100)
 
 	# Extract times
 	pattern = r'([0-9]{1,2}[:\.][0-9]{2}(?:am|pm)?)'
@@ -41,7 +61,6 @@ def ProcessTags(data_in, replace=True):
 	if replace:
 		data_in = re.sub(pattern,'DATE_TAG',data_in, 100)
 
-
 	# Extract prices
 	pattern = r'([0-9]+[\.\'\,]?[0-0]+ (?:euro|euros|dólar|dólares|[\€\$]))'
 	append = re.findall(pattern, data_in, re.M | re.I)
@@ -59,7 +78,6 @@ def ProcessTags(data_in, replace=True):
 		data_in = re.sub(pattern,'NUMBER_TAG',data_in, 100)
 
 	return data_in, data #data_in = text, data = tags
-
 
 ## Restore tags on original text
 def RestoreTags(text, backup):

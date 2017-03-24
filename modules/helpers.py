@@ -1,16 +1,14 @@
 #!usr/bin/env python
 
-try:
-	from BeautifulSoup import BeautifulSoup
-	use_bs = True
-except:
-	import re
-	use_bs = False
+import re
+from xml.sax.saxutils import unescape # remove &...;
 
 def cleanhtml(raw_html):
-	global use_bs
-	if use_bs:
-		return BeautifulSoup(raw_html).text
-	else:
-		cleanr = re.compile('<.*?>')
-		return re.sub(cleanr, '', raw_html)
+	cleanr = re.compile('<.*?>')
+	text = re.sub(cleanr, '', raw_html)
+
+	text = unescape(text) # remove &...;
+
+	cleanr = re.compile('[\s]{2,}')
+	text = re.sub(cleanr, ' ', text)
+	return text

@@ -6,14 +6,14 @@
 ## Autor: Jean-Francois Kener
 ##
 
-import nltk
+import nltk, re
 from nltk.tokenize import sent_tokenize # para separar frases
 
 # Load trained POS-tagger + NE chunker
-tagger_rss = nltk.data.load('../data/kenerator_aubt.pickle')
-chunker_rss = nltk.data.load('../data/kenerator_NaiveBayes.pickle')
-tagger_twitter = nltk.data.load('../data/kenerator_aubt.pickle')
-chunker_twitter = nltk.data.load('../data/kenerator_NaiveBayes.pickle')
+tagger_rss = nltk.data.load('../data/kener-rss-tagger.pickle')
+chunker_rss = nltk.data.load('../data/kener-rss-chunker.pickle')
+tagger_twitter = nltk.data.load('../data/kener-twitter-tagger.pickle')
+chunker_twitter = nltk.data.load('../data/kener-twitter-chunker.pickle')
 
 
 # Extract entity from tree
@@ -46,11 +46,20 @@ def nltk_extract(text, text_type="twitter"):
     sents = sent_tokenize(text)
     sents = sents[:3] # Relevant infos should be shown first
 
+    # Separate commas and other punctuation
+    for sent in sents:
+        sent = re.sub(r'([\!\¡\¿\?\,\'\"\(\)\.\-])', r' \1 ', sent)
+        sent = re.sub(r'\.\ \.\ \.\ ','...', sent)
+        sent = re.sub(r'[\s]{2,}',' ', sent)
+
+
+    # Extract NEs
     for sent in sents:
         if text_type=="twitter":
             print "Parsing twit..."
             str_tags = tagger_twitter.tag(nltk.word_tokenize(sent))
             str_chunks = chunker_twitter.parse(str_tags)
+            data['title'].extend(extract_ents(str_chunks,'MAIN'))
         elif text_type=="rss":
             print "Parsing rss..."
             str_tags = tagger_rss.tag(nltk.word_tokenize(sent))
