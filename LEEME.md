@@ -66,7 +66,7 @@ extraiga luego servirá de título.
   Es normal si te dice que la fecha del evento es "tortilla de papas", necesitamos múltiple mano de obra barata para que hagan un buen pedazo
   de .train (y específico para lo nuestro, por eso no cogí el dataset de CESS_ESP ni el CONLL2002 que incluye nltk_data)
 
-  - ¿por qué "kenerator"?
+- ¿por qué "kenerator"?
   porque NER es acrónimo de named-entity recognition,
   y ya que mi apellido es keNER, pues...!
 
