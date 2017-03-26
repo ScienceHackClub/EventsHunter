@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 #!usr/bin/env python
 
-## UNFINISHED
-## Text preprocessing
-## - Separa comas, interrogantes, dospuntos, exc,etc (y puntos?) de palabras
-## - Extracts dates,times,prices,numbers by regex, hashtags, links, etc
-## and prepares TAGs for NLTK parse
+##
+## Prepara el texto sustituyendo valores por tags para facilitar
+## el funcionamiento de NLTK, y posteriormente restaura los tags
+## en los named entities devueltos de nltk_parse.py
 ##
 ## Author: Jean-Francois
 ##
@@ -79,22 +78,51 @@ def PrepareText(data_in, replace=True):
 
 	return data_in, data #data_in = text, data = tags
 
+##
+NE_TAG = {
+        "loc" : ['HASH_TAG','LINK_TAG','NUMBER_TAG'],
+        "date" : ['DATE_TAG', 'TIME_TAG','NUMBER_TAG'],
+        "time" : ['TIME_TAG','NUMBER_TAG'],
+        "person" : ['HASH_TAG','LINK_TAG'],
+        "price" : ['PRICE_TAG','NUMBER_TAG'],
+        "title" : ['PRICE_TAG','NUMBER_TAG','HASH_TAG','LINK_TAG'],
+        "org" : ['HASH_TAG','LINK_TAG']
+}
+
+
 ## Restore tags on original text
-def RestoreTags(text, backup):
-	for it in backup: # it = TAGS
-		for el in it: # el = backup data
-			text = text.replace(it, el)
+def RestoreTags(nltk_data, text, backup_tags):
+	global NE_TAG
+	new_data = {
+        "loc" : [],
+        "date" : [],
+        "time" : [],
+        "person" : [],
+        "price" : [],
+        "title" : [],
+        "org" : []
+    }
+	for ne_type in nltk_data:
+		for ne in nltk_data[ne_type]:
+			val = ne[0]
 
-
-## bruteforce restoration (temporal)
-## THIS IS BUGGY. A SENTENCE COULD BE IN TWO PLACES
-## TO DO: SAVE TAG POSITION IN NLTK PROCESSING
-def RestoreEntity(sent, text, backup, tag_type):
-	i=0
-	for el in backup[tag_type]: # el = backup data
-		test_sent = sent.replace(tag_type, el)
-		found = text.find(sent)
-		if found!=-1:
-			regex = '^((.*?'+tag_type+'.*?){' + i + '})'+tag_type
-			text = re.sub(regex, el, text)
-		i+=1
+			tag_limit = ne[1]+3
+			tag_index = text.count(ne_type, 0, tag_limit)
+			'''
+			if ne[0].count('El DATE_TAG') > 0:
+				print "here--------------------------------------"
+				print nltk_data
+				print text
+				print backup_tags
+			'''
+			for tag_type in NE_TAG[ne_type]:
+				tag_number = ne[0].count(tag_type)
+				for i in xrange(tag_number):
+					#try:
+					tag_restore = backup_tags[tag_type][tag_index+i]
+					val = val.replace(tag_type, tag_restore, 1)
+					#except:
+					#	print "Bug restoring tag data"
+					#	pass
+			new_data[ne_type].append(val)
+	return new_data

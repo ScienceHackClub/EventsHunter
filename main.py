@@ -20,7 +20,6 @@ debug_path = './debug/'
 with open("config.json") as json_data:
     config = json.load(json_data)
 
-
 # Load args (not used yet)
 if len(sys.argv) > 1:
 	url = sys.argv[1]
@@ -82,8 +81,9 @@ for tw in twits:
     # Process text with custom regex for tags + NLTK
     text, backup_tags = regex_data.PrepareText(tw['text'], replace=True)
     nltk_data = nltk_parse.nltk_extract(text, text_type="twitter")
+    nltk_data = regex_data.RestoreTags(nltk_data, text, backup_tags)
 
-    # Temporal unrestored first-ocurrence data
+    # Temporal first-ocurrence data
     for it in nltk_data:
         if len(nltk_data[it]) > 0:
             new_item[it] = nltk_data[it][0]
@@ -135,11 +135,19 @@ for item in entries:
     # Process text with custom regex for tags + NLTK
     text, backup_tags = regex_data.PrepareText(clean_desc, replace=True)
     nltk_data = nltk_parse.nltk_extract(text, text_type="rss")
+    #print "BACKUP TAGS---------------------------"
+    #print backup_tags
+    #print "BEFORE--------------------------------"
+    #print nltk_data
+    nltk_data = regex_data.RestoreTags(nltk_data, text, backup_tags)
+    #print "AFTER---------------------------------"
+    #print nltk_data
 
-    # Temporal unrestored first-ocurrence data
+    # Temporal first-ocurrence data
     for it in nltk_data:
         if len(nltk_data[it]) > 0:
             new_item[it] = nltk_data[it][0]
+
 
     if (new_item['date']!=None
     and new_item['title']!=None):
