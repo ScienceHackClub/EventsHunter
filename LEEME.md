@@ -46,7 +46,7 @@ extraiga luego servirá de título.
   3 - Descargar nltk_trainer https://github.com/japerk/nltk-trainer
 
   4- Meter UN SOLO archivo .train (twitter o rss) en una nueva carpeta
-  llamada kenerator en la carpeta donde está instalado nltk_data
+  llamada kenerator en la carpeta "corpora" donde está instalado nltk_data
 
   5- Entrenar los archivos CHUNKER y TAGGER. El tagger pone etiquetas
   POS (verbos, adjetivos, adverbios, nombres...) a palabras que sirven para generalizar los datos y que el chunker pueda relacionar datos desconocidos.
@@ -55,9 +55,8 @@ extraiga luego servirá de título.
 
   python ./train_chunker.py kenerator --classifier NaiveBayes --filename kener-twitter-chunker
 
-
-- ¿por qué "kenerator"? porque NER es acrónimo de named-entity recognition,
-y ya que mi apellido es keNER, pues...
+  Estos comandos darán los respectivos tagger y chunker en las carpetas
+  con el mismo nombre en la carpeta corpora de nltk_data
 
 
 ## FAQ
@@ -66,6 +65,10 @@ y ya que mi apellido es keNER, pues...
 
   Es normal si te dice que la fecha del evento es "tortilla de papas", necesitamos múltiple mano de obra barata para que hagan un buen pedazo
   de .train (y específico para lo nuestro, por eso no cogí el dataset de CESS_ESP ni el CONLL2002 que incluye nltk_data)
+
+  - ¿por qué "kenerator"?
+  porque NER es acrónimo de named-entity recognition,
+  y ya que mi apellido es keNER, pues...!
 
 
 ## BUGS
