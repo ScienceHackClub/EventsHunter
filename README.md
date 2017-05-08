@@ -42,3 +42,5 @@ If `debug=1`, the program will not connect to internet and will use the data on 
 - [ ] Visualization of the information in a javascript calendar
 
 ## License
+
+MIT Licese
