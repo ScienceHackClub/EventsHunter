@@ -35,11 +35,18 @@ If `debug=1`, the program will not connect to internet and will use the data on 
 ## BUGS
 
 
+## Dependencies
+
+- [Full Calendar](http://www.fullcalendar.io) 
+
 ## TODO
 
 - [ ] Clean the weird text stuff (&quotes;, commas, etc.)
 - [ ] Optparsing options in the main program 
 - [ ] Visualization of the information in a javascript calendar
+	- [ ] Configuration of FullCalendar
+	- [ ] Parsing of a json in the javascript
+	- [ ] Theme Style (no urgent!)
 
 ## License
 
